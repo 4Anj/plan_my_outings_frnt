@@ -10,6 +10,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowLeft, Lightbulb, MapPin, Clock, Star, Loader, Sparkles, Search } from "lucide-react"
 import gsap from "gsap"
+import Script from "next/script";
 
 interface Suggestion {
   id: string
@@ -1143,8 +1144,81 @@ export default function AISuggestionsPage() {
               </CardContent>
             </Card>
           )}
+          <AITravelSuggestions />
+          </div>
         </div>
-      </div>
+        
+      <Script src="https://elfsightcdn.com/platform.js" strategy="afterInteractive" />
+      <div
+      className="elfsight-app-eb8c7c29-2151-4dcf-972f-8a1421346872"
+      data-elfsight-app-lazy="true"
+      ></div>
     </ProtectedRoute>
   )
+}
+
+function AITravelSuggestions() {
+  const [location, setLocation] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setSuggestions([
+        `🌄 Visit scenic viewpoints around ${location}`,
+        `🍽️ Try local cafes near ${location}`,
+        `🎭 Attend cultural events or night markets in ${location}`,
+      ]);
+      setLoading(false);
+    }, 1500);
+  };
+
+  return (
+    <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-indigo-900 via-purple-800 to-fuchsia-700 text-white border-none">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-2xl font-bold">
+          <Sparkles className="text-yellow-300" /> AI Travel Recommender
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="location" className="text-white">
+              Enter your location
+            </Label>
+            <Input
+              id="location"
+              type="text"
+              placeholder="e.g., Bangalore"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="bg-white/10 border border-white/20 text-white placeholder:text-gray-300"
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-4 py-2 rounded-xl transition-transform transform hover:scale-105"
+          >
+            {loading ? "✨ Thinking..." : "Get Smart Suggestions"}
+          </Button>
+        </form>
+
+        {suggestions.length > 0 && (
+          <ul className="mt-6 space-y-2 animate-fadeIn">
+            {suggestions.map((s, i) => (
+              <li
+                key={i}
+                className="bg-white/10 p-3 rounded-xl backdrop-blur-md border border-white/20"
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
